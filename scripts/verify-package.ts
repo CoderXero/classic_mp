@@ -1,0 +1,13 @@
+import { existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+const artifact = 'release/classicmp_0.1.0_amd64.deb';
+if (!existsSync(artifact)) throw new Error(`Missing ${artifact}; run npm run package:deb first`);
+const metadata = execFileSync('dpkg-deb', ['-I', artifact], { encoding: 'utf8' });
+const contents = execFileSync('dpkg-deb', ['-c', artifact], { encoding: 'utf8' });
+for (const required of ['Package: classicmp', 'Architecture: amd64']) if (!metadata.includes(required)) throw new Error(`Package is missing ${required}`);
+if (!contents.includes('/usr/share/applications/classicmp.desktop')) throw new Error('Package is missing the desktop entry');
+console.log(`PASS Debian package ${artifact}`);
+const appImage = 'release/ClassicMP-0.1.0.AppImage';
+if (!existsSync(appImage)) throw new Error(`Missing ${appImage}; run npm run package:appimage first`);
+execFileSync('test', ['-x', appImage]);
+console.log(`PASS AppImage ${appImage}`);

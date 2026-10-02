@@ -1,0 +1,13 @@
+import { z } from 'zod';
+export const mediaSourceSchema = z.object({ type: z.enum(['file', 'url']), path: z.string().min(1).optional(), url: z.string().url().optional() }).superRefine((v, ctx) => { if (v.type === 'file' && !v.path) ctx.addIssue({ code: 'custom', path: ['path'], message: 'A file path is required' }); if (v.type === 'url' && !v.url) ctx.addIssue({ code: 'custom', path: ['url'], message: 'A URL is required' }); });
+export const openSchema = z.object({ source: mediaSourceSchema, mode: z.enum(['replace', 'append']).default('replace') });
+export const seekSchema = z.object({ seconds: z.number().finite(), relative: z.boolean().default(true) });
+export const speedSchema = z.object({ speed: z.number().min(0.25).max(4) });
+export const volumeSchema = z.object({ volume: z.number().min(0).max(130) });
+export const settingsSchema = z.record(z.unknown());
+export const historySchema = z.object({ id: z.string().min(1), path: z.string().min(1).optional(), url: z.string().url().optional(), displayName: z.string().min(1), identity: z.string().min(1), duration: z.number().nonnegative(), position: z.number().nonnegative(), completed: z.boolean().default(false) });
+export const favoriteSchema = z.object({ id: z.string().min(1), name: z.string().min(1).max(300), sourceType: z.enum(['file', 'url']), source: z.string().min(1), position: z.number().nonnegative().optional() });
+export const playlistSchema = z.object({ id: z.string().min(1), name: z.string().min(1).max(300), items: z.array(z.object({ id: z.string().min(1), sourceType: z.enum(['file', 'url']), source: z.string().min(1), title: z.string().optional() })).max(10000) });
+export const trackSchema = z.object({ id: z.union([z.number().int().nonnegative(), z.literal('no')]) });
+export const externalMediaSchema = z.object({ path: z.string().min(1).max(4096).refine((p) => !p.includes('\0') && !p.startsWith('file://'), 'Invalid local path') });
+export const delaySchema = z.object({ seconds: z.number().finite().min(-3600).max(3600) });

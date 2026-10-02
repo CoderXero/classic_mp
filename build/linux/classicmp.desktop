@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=ClassicMP
+GenericName=Media Player
+Comment=Play video and audio files
+Exec=classicmp %U
+Icon=classicmp
+Terminal=false
+Categories=AudioVideo;Player;
+StartupNotify=true
+MimeType=video/mp4;video/x-matroska;video/webm;video/x-msvideo;audio/mpeg;audio/flac;audio/ogg;audio/wav;audio/mp4;application/x-mpegurl;audio/x-mpegurl;
